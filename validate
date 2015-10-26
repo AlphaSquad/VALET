@@ -63,15 +63,15 @@ results:
   - name: plot
     type: pdf
     inline: false
-    value: ${TMP_DIR}/comparison_plots.pdf
+    value: comparison_plots.pdf
     description: Plots of the different errors
   - name: summary
     type: tsv
     inline: false
-    value: ${TMP_DIR}/asm_0/summary.tsv
+    value: asm_0/summary.tsv
     description: all detected errors combined
   - name: library
     type: bam
-    value: ${TMP_DIR}/asm_0/bam/sorted_library.bam
+    value: asm_0/bam/sorted_library.bam
     description: bam library usable by IGV
 EOF 

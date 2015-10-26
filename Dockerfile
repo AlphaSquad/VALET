@@ -1,5 +1,6 @@
-FROM ubuntu:14.04.3
+FROM debian:stable
 MAINTAINER Nathan Olson "https://github.com/nate-d-olson"
+# edited by Adrian Fritz Adrian.Fritz@Helmholtz-HZI.de
 
 # Setup a base system 
 ENV DEBIAN_FRONTEND noninteractive

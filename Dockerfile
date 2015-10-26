@@ -3,11 +3,11 @@ MAINTAINER Nathan Olson "https://github.com/nate-d-olson"
 # edited by Adrian Fritz Adrian.Fritz@Helmholtz-HZI.de
 
 # Setup a base system 
-# IPv4 might be needed? (-o Acquire::ForceIPv4=true)
 ENV DEBIAN_FRONTEND noninteractive
 
 # In case you're sitting behind a proxy
-# ENV http_proxy <PROXY-IP>
+# ENV http_proxy <proxy ip>
+# ENV https_proxy <proxy ip>
 
 RUN apt-get update
 RUN apt-get install -y -q   \ 

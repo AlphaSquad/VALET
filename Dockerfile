@@ -3,6 +3,7 @@ MAINTAINER Nathan Olson "https://github.com/nate-d-olson"
 # edited by Adrian Fritz Adrian.Fritz@Helmholtz-HZI.de
 
 # Setup a base system 
+# IPv4 might be needed? (-o Acquire::ForceIPv4=true)
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 RUN apt-get install -y -q   \ 

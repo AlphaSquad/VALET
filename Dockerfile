@@ -63,8 +63,20 @@ RUN git clone https://github.com/cmhill/VALET.git
 RUN ln -s VALET/src/py/valet.py valet
 RUN chmod +x valet
 
+ENV CONVERT https://github.com/bronze1man/yaml2json/raw/master/builds/linux_386/yaml2json
+# download yaml2json and make it executable
+RUN cd /usr/local/bin && wget --quiet ${CONVERT} && chmod 700 yaml2json
+
+ENV JQ http://stedolan.github.io/jq/download/linux64/jq
+# download jq and make it executable
+RUN cd /usr/local/bin && wget --quiet ${JQ} && chmod 700 jq
+
 VOLUME ["/output"]
 
-# ENTRYPOINT python /VALET/src/py/valet.py
-# CMD ['-a', '-p', '-1', '-2','--assembly-names']
+# Add Taskfile to /
+ADD Taskfile /
+
+ADD validate /usr/local/bin/
+
+ENTRYPOINT["validate"]
 

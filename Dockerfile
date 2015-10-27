@@ -78,5 +78,5 @@ ADD Taskfile /
 
 ADD validate /usr/local/bin/
 
-ENTRYPOINT["validate"]
+ENTRYPOINT ["validate"]
 

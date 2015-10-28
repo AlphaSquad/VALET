@@ -7,7 +7,7 @@ set -o errexit
 set -o nounset
 
 INPUT=/bbx/mnt/input/biobox.yaml
-OUTPUT=/bbx/mnt/input
+OUTPUT=/bbx/mnt/output
 METADATA=/bbx/mnt/metadata
 
 # Since this script is the entrypoint to your container

@@ -1,1 +1,1 @@
-valet: python VALET/src/py/valet.py -a ${ASSEMBLY} -q -r ${READS} -o ${TMP_DIR}
+valet: python VALET/src/py/valet.py -a ${ASSEMBLY} -q -r ${READS} -o ${OUTPUT}

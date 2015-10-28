@@ -33,19 +33,19 @@ RUN echo 'options(repos = list(CRAN = "http://cran.rstudio.com/"))' >> /etc/R/Rp
 # install bowtie2 
 RUN wget http://downloads.sourceforge.net/project/bowtie-bio/bowtie2/2.2.2/bowtie2-2.2.2-linux-x86_64.zip;\
     unzip bowtie2-2.2.2-linux-x86_64.zip && rm -rf bowtie2-2.2.2-linux-x86_64.zip;\
-    ln -s 'pwd'/bowtie*/bowtie* /usr/local/bin
+    ln -s `pwd`/bowtie*/bowtie* /usr/local/bin
 
 # install htslib samtools
 RUN wget https://github.com/samtools/samtools/releases/download/1.2/samtools-1.2.tar.bz2;\
     tar -xaf samtools-1.2.tar.bz2 && rm -rf samtools-1.2.tar.bz2 ;\
     cd samtools-1.2;\
-    make && ln -f -s 'pwd'/* /usr/local/bin/ && cd ../
+    make && ln -f -s `pwd`/* /usr/local/bin/ && cd ../
 
 # install bedtools
 RUN wget https://github.com/arq5x/bedtools2/releases/download/v2.24.0/bedtools-2.24.0.tar.gz;\
     tar -xaf bedtools-2.24.0.tar.gz && rm -rf bedtools-2.24.0.tar.gz ;\
     cd bedtools2;\
-    make && ln -f -s 'pwd'/bin/* /usr/local/bin/ && cd ../ 
+    make && ln -f -s `pwd`/bin/* /usr/local/bin/ && cd ../ 
 
 # install Perl modules for REAPR
 RUN apt-get install -y cpanminus
@@ -55,7 +55,7 @@ RUN cpanm -v JSON File::Basename File::Copy File::Spec File::Spec::Link Getopt::
 RUN wget ftp://ftp.sanger.ac.uk/pub/resources/software/reapr/Reapr_1.0.18.tar.gz;\
     tar -xaf Reapr_1.0.18.tar.gz && rm -rf Reapr_1.0.18.tar.gz;\
     cd Reapr_1.0.18;\
-    ./install.sh && ln -f -s 'pwd'/reapr /usr/local/bin/ && cd ../
+    ./install.sh && ln -f -s `pwd`/reapr /usr/local/bin/ && cd ../
 
 # install VALET
 RUN apt-get install -y -q python-numpy python-scipy
@@ -65,7 +65,7 @@ RUN chmod +x valet
 
 ENV CONVERT https://github.com/bronze1man/yaml2json/raw/master/builds/linux_386/yaml2json
 # download yaml2json and make it executable
-RUN cd /usr/local/bin && wget --quiet ${CONVERT} && chmod 700 yaml2json
+RUN cd /usr/local/bin && wget ${CONVERT} && chmod 700 yaml2json
 
 ENV JQ http://stedolan.github.io/jq/download/linux64/jq
 # download jq and make it executable

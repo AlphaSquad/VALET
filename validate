@@ -35,13 +35,13 @@ INPUT_JSON="${TMP_DIR}/biobox.json"
 
 $(yaml2json < ${INPUT} > $INPUT_JSON)
 
-ARGUMENTS=$(jq  --raw-output '.arguments[]' $INPUT_JSON )
+ARGUMENTS=$(jq --raw-output '.arguments' $INPUT_JSON )
 
 #get assembly (fasta)
-ASSEMBLY=$( echo $ARGUMENTS | jq --raw-output 'select(has("fasta")) | .fasta[].value' | tr '\n' ' ')
+ASSEMBLY=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].path' | tr '\n' ' ')
 
 #get reads (gzipped fastq)
-READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("fq")) | .fq[].value' | tr '\n' ' ')
+READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("fastqs")) | .fastqs[].path' | tr '\n' ' ')
 
 #get cache
 CACHE=$( echo $ARGUMENTS | jq --raw-output 'select(has("cache")) | .cache ' )

@@ -31,7 +31,7 @@ fi
 
 TMP_DIR=$(mktemp -d)
 
-INPUT_JSON="${WORK_DIR}/biobox.json"
+INPUT_JSON="${TMP_DIR}/biobox.json"
 
 $(yaml2json < ${INPUT} > $INPUT_JSON)
 

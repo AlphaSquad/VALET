@@ -40,8 +40,14 @@ ARGUMENTS=$(jq --raw-output '.arguments' $INPUT_JSON )
 #get assembly (fasta)
 ASSEMBLY=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].path' | tr '\n' ' ')
 
-#get reads (gzipped fastq)
+#get reads (gzipped? fastq)
 READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("fastqs")) | .fastqs[].path' | tr '\n' ' ')
+
+# Evaluation needs fastq reads
+unzip $READS
+# strip gz (and possibly tar) from filename
+READS=${READS%.gz}
+READS=${READS%.tar}
 
 #get cache
 CACHE=$( echo $ARGUMENTS | jq --raw-output 'select(has("cache")) | .cache ' )

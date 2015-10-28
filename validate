@@ -6,9 +6,9 @@ set -o errexit
 # exit script if Variable is not set
 set -o nounset
 
-INPUT=/bbx/input/biobox.yaml
-OUTPUT=/bbx/output
-METADATA=/bbx/metadata
+INPUT=/bbx/mnt/input/biobox.yaml
+OUTPUT=/bbx/mnt/input
+METADATA=/bbx/mnt/metadata
 
 # Since this script is the entrypoint to your container
 # you can access the task in `docker run task` as the first argument
@@ -38,11 +38,10 @@ $(yaml2json < ${INPUT} > $INPUT_JSON)
 ARGUMENTS=$(jq  --raw-output '.arguments[]' $INPUT_JSON )
 
 #get assembly (fasta)
-
 ASSEMBLY=$( echo $ARGUMENTS | jq --raw-output 'select(has("fasta")) | .fasta[].value' | tr '\n' ' ')
 
-#get reads (fastq)
-READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("fastq")) | .fastq[].value' | tr '\n' ' ')
+#get reads (gzipped fastq)
+READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("fq")) | .fq[].value' | tr '\n' ' ')
 
 #get cache
 CACHE=$( echo $ARGUMENTS | jq --raw-output 'select(has("cache")) | .cache ' )

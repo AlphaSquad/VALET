@@ -41,13 +41,15 @@ ARGUMENTS=$(jq --raw-output '.arguments' $INPUT_JSON )
 ASSEMBLY=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].path' | tr '\n' ' ')
 
 #get reads (gzipped? fastq)
-READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads[].path' | tr '\n' ' ')
+READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads.path')
 
 # Evaluation needs fastq reads
-unzip $READS
+tar -xvzf $READS
 # strip gz (and possibly tar) from filename
 READS=${READS%.gz}
-READS=${READS%.tar}
+# READS=${READS%.tar} single files, no tar
+# append correct file ending
+READS=$READS$".fq"
 
 #get cache
 CACHE=$( echo $ARGUMENTS | jq --raw-output 'select(has("cache")) | .cache ' )

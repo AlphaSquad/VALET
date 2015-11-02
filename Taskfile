@@ -1,1 +1,2 @@
-default: python VALET/src/py/valet.py -a ${ASSEMBLY} --assembly-names ${LABELS}  -q -r ${UNZIPPED_READS} -o ${OUTPUT}
+# default: python VALET/src/py/valet.py -a ${ASSEMBLY} --assembly-names ${LABELS}  -q -r ${UNZIPPED_READS} -o ${OUTPUT}
+default: python VALET/src/py/valet.py -a ${ASSEMBLY} --assembly-names ${LABELS}  -q ${UNZIPPED_READS} -o ${OUTPUT}

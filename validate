@@ -45,34 +45,48 @@ ASSEMBLY=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .asse
 LABELS=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].id' |  tr '\n' ' ' | xargs | tr ' ' ',')
 
 #get gzipped fastq reads
-READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads[].path')
+READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads[].path' |  tr '\n' ' ')
 
 # check whether reads are single or paired end
-END=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads[].type')
+END=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads[].type' |  tr '\n' ' ')
 
 #get cache
-CACHE=$( echo $ARGUMENTS | jq --raw-output 'select(has("cache")) | .cache ' )
+CACHE=$( echo $ARGUMENTS | jq --raw-output 'select(has("cache")) | .cache ' |  tr '\n' ' ')
 
 #check if cache is defined
 if [ ! -z "$CACHE" ]; then
         TMP_DIR=$CACHE
 fi
 
-UNZIPPED_READS="${TMP_DIR}/reads.fq"
+# we need reads unzipped
+gunzip $READS
 
-# Evaluation needs fastq reads
-gunzip -c $READS > $UNZIPPED_READS
+SINGLE_ENDED="-r"
+PAIRED_1="-1"
+PAIRED_2="-2"
 
-if [$END = "single"]; then
-  UNZIPPED_READS=$"-r "$UNZIPPED_READS
-#elif [$END = "paired"]; then
-#  UNZIPPED_READS
+# sort by single/paired end
+READ_ARR=( $READS )
+I=0
+for typ in $END; do
+if [ $typ = "single" ]; then
+  SINGLE_ENDED=$SINGLE_ENDED$" "${READ_ARR[$I]%.*}
+else # can only be paired then
+  perl unshuffle_fastq.pl -f ${READ_ARR[$I]%.*} -o `pwd` -n ${READ_ARR[$I]%.*}
+  PAIRED_1=$PAIRED_1$" "${READ_ARR[$I]%.*}$".1"
+  PAIRED_2=$PAIRED_2$" "${READ_ARR[$I]%.*}$".2"
+fi
+I=$(expr $I + 1)
+done
+
+if [$SINGLE_ENDED = "-r"]; then #only paired
+  UNZIPPED_READS=$PAIRED_1$" "$PAIRED_2
+elif [$PAIRED_1 = "-1"]; then #only single ended
+  UNZIPPED_READS=$SINGLE_ENDED
 else
-  echo "Reads have to be either single or paired"
-  exit 2
+  UNZIPPED_READS=$SINGLE_ENDED$" "$PAIRED_1$" "$PAIRED_2
 fi
 
-echo $ASSEMBLY
 eval ${CMD}
 
 cat << EOF > ${OUTPUT}/biobox.yaml

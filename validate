@@ -14,8 +14,10 @@ METADATA=/bbx/mnt/metadata
 # you can access the task in `docker run task` as the first argument
 TASK=$1
 
-# Ensure the biobox.yaml file is valid (TODO)
-# validate-biobox-file --input ${INPUT} --schema /schema.yaml
+# Ensure the biobox.yaml file is valid
+validate-biobox-file \
+  --input ${INPUT} \
+  --schema /schema.yaml \
 
 # Use grep to get $TASK in /Taskfile
 CMD=$(egrep ^${TASK}: /Taskfile | cut -f 2 -d ':')
@@ -29,7 +31,7 @@ if [ -d "$METADATA" ]; then
   CMD="($CMD) >& $METADATA/log.txt"
 fi
 
-TMP_DIR=$(mktemp -d)
+TMP_DIR="${OUTPUT}"
 
 INPUT_JSON="${TMP_DIR}/biobox.json"
 
@@ -38,18 +40,12 @@ $(yaml2json < ${INPUT} > $INPUT_JSON)
 ARGUMENTS=$(jq --raw-output '.arguments' $INPUT_JSON )
 
 #get assembly (fasta)
-ASSEMBLY=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].path' | tr '\n' ' ')
+ASSEMBLY=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].path' |  tr '\n' ' ' | xargs | tr ' ' ',')
 
-#get reads (gzipped? fastq)
+LABELS=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].id' |  tr '\n' ' ' | xargs | tr ' ' ',')
+
+#get gzipped fastq reads
 READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads.path')
-
-# Evaluation needs fastq reads
-tar -xvzf $READS
-# strip gz (and possibly tar) from filename
-READS=${READS%.gz}
-# READS=${READS%.tar} single files, no tar
-# append correct file ending
-READS=$READS$".fq"
 
 #get cache
 CACHE=$( echo $ARGUMENTS | jq --raw-output 'select(has("cache")) | .cache ' )
@@ -59,10 +55,13 @@ if [ ! -z "$CACHE" ]; then
         TMP_DIR=$CACHE
 fi
 
-eval ${CMD}
+UNZIPPED_READS="${TMP_DIR}/reads.fq"
 
-#convert pdf plots to png files
-#convert ${TMP_DIR}/comparison_plots.pdf plot.png
+# Evaluation needs fastq reads
+gunzip -c $READS > $UNZIPPED_READS
+
+echo $ASSEMBLY
+eval ${CMD}
 
 cat << EOF > ${OUTPUT}/biobox.yaml
 version: 0.1.0

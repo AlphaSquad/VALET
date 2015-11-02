@@ -45,7 +45,10 @@ ASSEMBLY=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .asse
 LABELS=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].id' |  tr '\n' ' ' | xargs | tr ' ' ',')
 
 #get gzipped fastq reads
-READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads.path')
+READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads[].path')
+
+# check whether reads are single or paired end
+END=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads[].type')
 
 #get cache
 CACHE=$( echo $ARGUMENTS | jq --raw-output 'select(has("cache")) | .cache ' )
@@ -59,6 +62,15 @@ UNZIPPED_READS="${TMP_DIR}/reads.fq"
 
 # Evaluation needs fastq reads
 gunzip -c $READS > $UNZIPPED_READS
+
+if [$END = "single"]; then
+  UNZIPPED_READS=$"-r "$UNZIPPED_READS
+#elif [$END = "paired"]; then
+#  UNZIPPED_READS
+else
+  echo "Reads have to be either single or paired"
+  exit 2
+fi
 
 echo $ASSEMBLY
 eval ${CMD}

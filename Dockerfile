@@ -22,7 +22,8 @@ RUN apt-get install -y -q   \
                             r-base-dev \
                             r-recommended \
                             python-setuptools \
-                            python-pip
+                            python-pip \
+                            perl
 
 RUN echo 'options(repos = list(CRAN = "http://cran.rstudio.com/"))' >> /etc/R/Rprofile.site
 

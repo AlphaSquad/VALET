@@ -92,4 +92,6 @@ ADD validate /usr/local/bin/
 
 ADD schema.yaml /
 
+ADD unshuffle.pl /
+
 ENTRYPOINT ["validate"]

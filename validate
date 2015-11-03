@@ -72,7 +72,7 @@ for typ in $END; do
 if [ $typ = "single" ]; then
   SINGLE_ENDED=$SINGLE_ENDED${READ_ARR[$I]%.*}$","
 else # can only be paired then
-  perl unshuffle_fastq.pl -f ${READ_ARR[$I]%.*} -o `pwd` -n ${READ_ARR[$I]%.*}
+  perl unshuffle.pl -f ${READ_ARR[$I]%.*} -o `pwd` -n ${READ_ARR[$I]%.*}
   PAIRED_1=$PAIRED_1${READ_ARR[$I]%.*}$".1,"
   PAIRED_2=$PAIRED_2${READ_ARR[$I]%.*}$".2,"
 fi
@@ -111,4 +111,3 @@ results:
     type: bam
     value: asm_0/bam/sorted_library.bam
     description: bam library usable by IGV
-EOF 

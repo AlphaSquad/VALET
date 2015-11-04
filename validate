@@ -58,23 +58,23 @@ if [ ! -z "$CACHE" ]; then
         TMP_DIR=$CACHE
 fi
 
-# we need reads unzipped
-gunzip $READS
+# we need reads unzipped (keep name, strip path)
+for f in $READS; do gunzip -c $f > ${f##*/}; UNZIPPED_READS=$UNZIPPED_READS${f##*/}$" "; done
 
 SINGLE_ENDED="-r "
 PAIRED_1="-1 "
 PAIRED_2="-2 "
 
 # sort by single/paired end
-READ_ARR=( $READS )
+READ_ARR=( $UNZIPPED_READS )
 I=0
 for typ in $END; do
 if [ $typ = "single" ]; then
-  SINGLE_ENDED=$SINGLE_ENDED${READ_ARR[$I]%.*}$","
+  SINGLE_ENDED=$SINGLE_ENDED${READ_ARR[$I]%.*}
 else # can only be paired then
   perl unshuffle.pl -f ${READ_ARR[$I]%.*} -o `pwd` -n ${READ_ARR[$I]%.*}
-  PAIRED_1=$PAIRED_1${READ_ARR[$I]%.*}$".1,"
-  PAIRED_2=$PAIRED_2${READ_ARR[$I]%.*}$".2,"
+  PAIRED_1=$PAIRED_1${READ_ARR[$I]%.*}$".1"
+  PAIRED_2=$PAIRED_2${READ_ARR[$I]%.*}$".2"
 fi
 I=$(expr $I + 1)
 done

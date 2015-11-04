@@ -58,6 +58,8 @@ if [ ! -z "$CACHE" ]; then
         TMP_DIR=$CACHE
 fi
 
+UNZIPPED_READS=""
+
 # we need reads unzipped (keep name, strip path, extract to tmp)
 for f in $READS; do gunzip -c $f > $TMP_DIR$"/"${f##*/}; UNZIPPED_READS=$UNZIPPED_READS$TMP_DIR$"/"${f##*/}$" "; done
 

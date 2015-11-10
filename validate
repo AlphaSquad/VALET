@@ -31,7 +31,7 @@ if [ -d "$METADATA" ]; then
   CMD="($CMD) >& $METADATA/log.txt"
 fi
 
-TMP_DIR="${OUTPUT}"
+TMP_DIR=$(mktemp -d)
 
 INPUT_JSON="${TMP_DIR}/biobox.json"
 
@@ -61,7 +61,7 @@ fi
 UNZIPPED_READS=""
 
 # we need reads unzipped (keep name, strip path, extract to tmp)
-for f in $READS; do gunzip -c $f > $OUTPUT$"/"${f##*/}; UNZIPPED_READS=$UNZIPPED_READS$OUTPUT$"/"${f##*/}$" "; done
+for f in $READS; do gunzip -c $f > $TMP_DIR$"/"${f##*/}; UNZIPPED_READS=$UNZIPPED_READS$TMP_DIR$"/"${f##*/}$" "; done
 
 SINGLE_ENDED="-r "
 PAIRED_1="-1 "

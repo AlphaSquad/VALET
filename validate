@@ -115,3 +115,4 @@ results:
     type: bam
     value: asm_0/bam/sorted_library.bam
     description: bam library usable by IGV
+EOF

@@ -31,7 +31,7 @@ if [ -d "$METADATA" ]; then
   CMD="($CMD) >& $METADATA/log.txt"
 fi
 
-TMP_DIR=$(mktemp -d)
+TMP_DIR=$OUTPUT
 
 INPUT_JSON="${TMP_DIR}/biobox.json"
 
@@ -42,7 +42,7 @@ ARGUMENTS=$(jq --raw-output '.arguments' $INPUT_JSON )
 #get assembly (fasta)
 ASSEMBLY=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].path' |  tr '\n' ' ' | xargs | tr ' ' ',')
 
-LABELS=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].id' |  tr '\n' ' ' | xargs | tr ' ' ',')
+LABELS=$( echo $ARGUMENTS | jq --raw-output 'select(has("assemblies")) | .assemblies[].id | select (.!=null)' |  tr '\n' ' ' | xargs | tr ' ' ',')
 
 #get gzipped fastq reads
 READS=$( echo $ARGUMENTS | jq --raw-output 'select(has("reads")) | .reads[].path' |  tr '\n' ' ')
@@ -76,6 +76,7 @@ if [ $typ = "single" ]; then
   SINGLE_ENDED=$SINGLE_ENDED${READ_ARR[$I]%.*}$","
 else # can only be paired then
   perl unshuffle.pl -f ${READ_ARR[$I]} -o `pwd` -n ${READ_ARR[$I]%.*} # implicitely strips .gz
+# rm -f ${READ_ARR[$I]} # delete temporary
   PAIRED_1=$PAIRED_1${READ_ARR[$I]%.*}$".1,"
   PAIRED_2=$PAIRED_2${READ_ARR[$I]%.*}$".2,"
 fi
@@ -95,11 +96,19 @@ else
   UNZIPPED_READS=$SINGLE_ENDED$" "$PAIRED_1$" "$PAIRED_2
 fi
 
-
-eval ${CMD}
-
 FNAME=""
-if [ ! -n "$LABELS" ]; then
+if [ ! -z "$LABELS" ]; then
+LBLS=${LABELS//,/ }
+LABELS=$"--assembly-names "$LABELS
+for lbl in $LBLS; do
+FNAME=$FNAME$"  - name: summary_$lbl
+    type: tsv
+    inline: false
+    value: $lbl/summary.tsv
+    description: all detected errors for assembly $lbl
+"
+done
+else
 I=0
 for a in $ASSEMBLY; do
 FNAME=$FNAME$"  - name: summary_$I
@@ -110,17 +119,11 @@ FNAME=$FNAME$"  - name: summary_$I
 "
 I=$(expr $I + 1)
 done
-else
-LABELS=${LABELS//,/ }
-for lbl in $LABELS; do
-FNAME=$FNAME$"  - name: summary_$lbl
-    type: tsv
-    inline: false
-    value: $lbl/summary.tsv
-    description: all detected errors for assembly $lbl
-"
-done
-fi
+fi 
+
+echo $CMD
+
+eval ${CMD}
 
 cat << EOF > ${OUTPUT}/biobox.yaml
 version: 0.2.0

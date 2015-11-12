@@ -121,8 +121,6 @@ I=$(expr $I + 1)
 done
 fi 
 
-echo $CMD
-
 eval ${CMD}
 
 cat << EOF > ${OUTPUT}/biobox.yaml

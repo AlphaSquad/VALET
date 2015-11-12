@@ -99,7 +99,7 @@ fi
 eval ${CMD}
 
 FNAME=""
-if [ ! -z "$LABELS" ]; then
+if [ ! -n "$LABELS" ]; then
 I=0
 for a in $ASSEMBLY; do
 FNAME=$FNAME$"  - name: summary_$I
@@ -111,6 +111,7 @@ FNAME=$FNAME$"  - name: summary_$I
 I=$(expr $I + 1)
 done
 else
+LABELS=${LABELS//,/ }
 for lbl in $LABELS; do
 FNAME=$FNAME$"  - name: summary_$lbl
     type: tsv

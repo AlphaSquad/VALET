@@ -12,7 +12,7 @@ build with
 Create input, output, and (optionally) cache directories, mount accordingly
 choose task to be run (default).
 
-To run VALET using the biobox a `biobox.yaml` file is required. You can use the `biobox.yaml` file in the next "Testing the VALET Biobox" as a template.  
+To run VALET using the biobox a `biobox.yaml` file is required. You can use the `biobox.yaml` file in the "Testing the VALET Biobox" section as a template.  
 
 ```
 sudo docker run --volume="$(pwd)/input:/bbx/mnt/input:ro" \
@@ -50,7 +50,7 @@ arguments:
 
 ### Downloading Test files
 
-The following code can be used to download the test data from the VALET repository.
+You can use the following code to download the test data from the VALET repository.
 
 ```
 !/usr/bin/sh
